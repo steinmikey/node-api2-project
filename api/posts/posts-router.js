@@ -63,12 +63,31 @@ router.put("/:id", async (req, res) => {
     });
   } else {
     try {
-      const updatedPost = await Post.update(id, req.body);
-      res.status(200).json({ id: post.id, ...req.body });
-      console.log(updatedPost);
+      await Post.update(id, req.body);
+      res.status(200).json({ id: parseInt(id), ...req.body });
     } catch (err) {
       res.status(500).json({
         message: "The post information could not be modified"
+      });
+    }
+  }
+});
+
+router.delete("/:id", async (req, res) => {
+  const { id } = req.params;
+  const post = await Post.findById(id);
+
+  if (!post) {
+    res.status(404).json({
+      message: "The post with the specified ID does not exist"
+    });
+  } else {
+    try {
+      await Post.remove(id);
+      res.status(200).json(post);
+    } catch (err) {
+      res.status(500).json({
+        message: "The post could not be removed"
       });
     }
   }
